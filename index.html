@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <title>Ayat Emas Acak</title>
     <style>
         body { 
@@ -42,6 +43,8 @@
         <button class="btn-main" onclick="acakAyat()">Dapatkan Ayat Emas</button>
         <a id="btn-wa" class="btn-wa" href="#" target="_blank">Bagikan ke WhatsApp</a>
     </div>
+
+    <button class="btn-main" style="background:#ff9800" onclick="unduhGambar()">Simpan Sebagai Gambar</button>
 </div>
 
 <script>
@@ -51,7 +54,7 @@
         { t: "Tuhan adalah terangku dan keselamatanku.", r: "Mazmur 27:1" },
         { t: "Kasihilah sesamamu manusia seperti dirimu sendiri.", r: "Matius 22:39" },
         { t: "Hati yang gembira adalah obat yang manjur.", r: "Amsal 17:22" },
-        // ... teruskan sampai 100 ayat
+        
         { t: "Ayat ke-100 Anda", r: "Referensi 100" }
     ];
 
@@ -64,10 +67,20 @@
         
         // Link WhatsApp
         const waLink = document.getElementById('btn-wa');
-        const pesan = encodeURIComponent(`Ayat Emas hari ini:\n\n"${ayat.t}"\n(${ayat.r})\n\nAmbil ayatmu di: [LINK_WEB_ANDA]`);
+        const pesan = encodeURIComponent(`Ayat Emas :\n\n"${ayat.t}"\n(${ayat.r})\n\nAmbil ayatmu di: [LINK_WEB_ANDA]`);
         waLink.href = `https://wa.me/?text=${pesan}`;
         waLink.style.display = "block";
     }
+
+    function unduhGambar() {
+    const kartu = document.querySelector('.container');
+    html2canvas(kartu).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'Ayat-Emas.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    });
+}
 </script>
 
 </body>
