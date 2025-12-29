@@ -3,42 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ayat-ayat emas untuk memulai hari/tahun. Bagikan lewat WhatsApp atau simpan gambar.">
+    <meta name="theme-color" content="#0f0c29">
     <title>Ayat Emas Tahun Baru</title>
+    <link rel="icon" href="/favicon.ico">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
+        :root{ --bg:#0f0c29; --gold:#d4af37; --glass-bg: rgba(255,255,255,0.92); --muted:#777; }
+        html,body{height:100%;}
         body { 
             display: flex; flex-direction: column; align-items: center; 
             justify-content: center; min-height: 100vh; margin: 0; 
-            background: #0f0c29; /* Warna Malam */
+            background: var(--bg); /* Warna Malam */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            -webkit-font-smoothing:antialiased;
         }
 
         /* Area yang akan dijadikan gambar */
         #capture-area {
             padding: 30px;
-            background: url('https://images.unsplash.com/photo-1546702414-076991192e21?q=80&w=1000') no-repeat center center;
-            background-size: cover;
+            background: #111;
             border-radius: 20px;
-            width: 320px;
+            width: min(90vw, 420px);
             display: flex;
             justify-content: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
         }
 
         .card-glass {
-            background: rgba(255, 255, 255, 0.9);
+            background: var(--glass-bg);
             backdrop-filter: blur(10px);
             padding: 25px;
             border-radius: 15px;
             text-align: center;
             width: 100%;
-            border: 2px solid #d4af37; /* Border Emas */
+            border: 2px solid var(--gold); /* Border Emas */
+            box-sizing: border-box;
         }
 
-        h3 { margin-top: 0; color: #d4af37; font-size: 1.2rem; }
-        #teks-ayat { font-size: 1.1rem; font-weight: 500; color: #333; margin-bottom: 10px; font-style: italic; min-height: 60px; }
+        h3 { margin-top: 0; color: var(--gold); font-size: 1.2rem; }
+        #teks-ayat { font-size: clamp(0.95rem, 2.8vw, 1.15rem); font-weight: 500; color: #333; margin-bottom: 10px; font-style: italic; min-height: 68px; word-break: break-word; hyphens: auto; }
         #ref-ayat { font-weight: bold; color: #555; margin-bottom: 10px; }
-        .watermark { font-size: 9px; color: #aaa; margin-top: 10px; }
+        .watermark { font-size: 10px; color: #aaa; margin-top: 10px; }
 
         /* Grup Tombol dengan Jarak */
         .btn-group {
@@ -46,7 +55,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px; /* Jarak antar tombol */
-            width: 300px;
+            width: min(90vw, 360px);
         }
 
         button, .btn-wa {
@@ -58,18 +67,27 @@
             text-align: center;
             text-decoration: none;
             font-size: 0.95rem;
-            transition: 0.3s;
+            transition: 0.18s transform, 0.18s opacity;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
         }
 
-        .btn-main { background: #d4af37; color: #000; }
+        .btn-main { background: var(--gold); color: #000; }
         .btn-wa { background: #25d366; color: white; display: none; }
         .btn-save { background: #ff9800; color: white; }
-        
-        button:hover { transform: scale(1.03); opacity: 0.9; }
+        button:disabled{ opacity: 0.6; cursor: not-allowed; transform: none; }
+        button:hover:not(:disabled), a:hover{ transform: scale(1.03); opacity: 0.95; }
+
+        /* focus styles */
+        button:focus, a:focus { outline: 3px solid rgba(212,175,55,0.25); outline-offset: 2px; border-radius: 40px; }
+
+        /* toast */
+        #toast{ position: fixed; left: 50%; transform: translateX(-50%); bottom: 28px; background: rgba(0,0,0,0.8); color:#fff; padding:10px 16px; border-radius:8px; display:none; z-index:9999; font-size:0.95rem; }
+
+        /* small screens */
+        @media (max-width:420px){ #capture-area{ padding:20px; } .card-glass{ padding:18px; } }
     </style>
 </head>
 <body>
@@ -77,19 +95,22 @@
     <div id="capture-area">
         <div class="card-glass">
             <h3>✨ Ayat Emas 2025 ✨</h3>
-            <div id="teks-ayat">"Klik tombol di bawah untuk menerima janji Tuhan hari ini"</div>
-            <div id="ref-ayat"></div>
+            <div id="teks-ayat" aria-live="polite">"Klik tombol di bawah untuk menerima janji Tuhan hari ini"</div>
+            <div id="ref-ayat" aria-hidden="true"></div>
             <div class="watermark">Dibuat di: iwanhadinata.github.io</div>
         </div>
     </div>
 
     <div class="btn-group">
-        <button class="btn-main" onclick="acakAyat()">🎲 Ambil Ayat Emas</button>
-        <a id="btn-wa" class="btn-wa" href="#" target="_blank">💬 Bagikan Teks ke WA</a>
-        <button class="btn-save" onclick="bagikanGambar()">📸 Bagikan / Simpan Gambar</button>
+        <button id="btn-random" class="btn-main" aria-label="Ambil Ayat Emas">🎲 Ambil Ayat Emas</button>
+        <a id="btn-wa" class="btn-wa" href="#" target="_blank" rel="noopener noreferrer" role="button" aria-disabled="true">💬 Bagikan Teks ke WA</a>
+        <button id="btn-save" class="btn-save" aria-label="Bagikan atau Simpan Gambar">📸 Bagikan / Simpan Gambar</button>
     </div>
 
+    <div id="toast" role="status" aria-live="polite"></div>
+
     <script>
+        // Daftar ayat (tidak diubah)
         const daftarAyat = [
             { t: "Janganlah takut, sebab Aku menyertai engkau.", r: "Yesaya 41:10" },
             { t: "Tuhan adalah gembalaku, takkan kekurangan aku.", r: "Mazmur 23:1" },
@@ -193,54 +214,131 @@
             { t: "Segala sesuatu yang bernapas, pujilah TUHAN! Haleluya!", r: "Mazmur 150:6" }
         ];
 
-        function acakAyat() {
-            const index = Math.floor(Math.random() * daftarAyat.length);
-            const ayat = daftarAyat[index];
-            
-            document.getElementById('teks-ayat').innerText = `"${ayat.t}"`;
-            document.getElementById('ref-ayat').innerText = ayat.r;
-            
-            // Link WhatsApp Teks
-            const waLink = document.getElementById('btn-wa');
-            const linkWeb = window.location.href;
-            const pesan = encodeURIComponent(`Ayat Emas Tahun Baru:\n\n"${ayat.t}"\n(${ayat.r})\n\nAmbil ayatmu di: ${linkWeb}`);
-            waLink.href = `https://wa.me/?text=${pesan}`;
-            waLink.style.display = "flex";
-        }
+        // Elements
+        const btnRandom = document.getElementById('btn-random');
+        const btnSave = document.getElementById('btn-save');
+        const btnWa = document.getElementById('btn-wa');
+        const teksAyatEl = document.getElementById('teks-ayat');
+        const refAyatEl = document.getElementById('ref-ayat');
+        const captureArea = document.getElementById('capture-area');
+        const toast = document.getElementById('toast');
 
-        async function bagikanGambar() {
-            const area = document.getElementById('capture-area');
-            // Menangkap area sebagai canvas
-            const canvas = await html2canvas(area, { 
-                useCORS: true, 
-                backgroundColor: "#0f0c29",
-                scale: 2 // Agar kualitas gambar lebih tajam
-            });
-            
-            const dataUrl = canvas.toDataURL("image/png");
-            const blob = await (await fetch(dataUrl)).blob();
-            const file = new File([blob], 'AyatEmas2025.png', { type: 'image/png' });
+        // Background preloading (increase chance html2canvas menangkap image)
+        const bgUrl = 'https://images.unsplash.com/photo-1546702414-076991192e21?q=80&w=1000';
+        let bgObjectUrl = null;
 
-            // Fitur Bagikan Langsung (Share API)
-            if (navigator.share && navigator.canShare({ files: [file] })) {
-                try {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Ayat Emas Tahun Baru',
-                        text: 'Dapatkan janji Tuhan untukmu hari ini!'
-                    });
-                } catch (err) {
-                    console.log("User membatalkan share.");
-                }
-            } else {
-                // Jika browser tidak mendukung share langsung, otomatis download
-                const link = document.createElement('a');
-                link.download = 'Ayat-Emas-2025.png';
-                link.href = dataUrl;
-                link.click();
-                alert("Gambar telah diunduh ke galeri! Silakan bagikan ke WhatsApp.");
+        async function preloadBackground() {
+            try {
+                const res = await fetch(bgUrl, { mode: 'cors' });
+                if (!res.ok) throw new Error('Gagal load background');
+                const blob = await res.blob();
+                bgObjectUrl = URL.createObjectURL(blob);
+                captureArea.style.backgroundImage = `url(${bgObjectUrl})`;
+                captureArea.style.backgroundSize = 'cover';
+                captureArea.style.backgroundPosition = 'center center';
+            } catch (err) {
+                console.warn('Tidak dapat memuat background dengan CORS, menggunakan warna solid.', err);
+                captureArea.style.background = '#111';
             }
         }
+
+        // Utility: toast message
+        let toastTimer = null;
+        function showToast(msg, ms = 3000){
+            clearTimeout(toastTimer);
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            toastTimer = setTimeout(()=>{ toast.style.display = 'none'; }, ms);
+        }
+
+        // Secure random index
+        function randomIndex(max){
+            if (window.crypto && window.crypto.getRandomValues) {
+                const arr = new Uint32Array(1);
+                window.crypto.getRandomValues(arr);
+                return arr[0] % max;
+            }
+            return Math.floor(Math.random() * max);
+        }
+
+        // Initial state
+        function initState(){
+            btnSave.disabled = true;
+            btnWa.style.display = 'none';
+            btnWa.setAttribute('aria-disabled', 'true');
+        }
+
+        function acakAyat(){
+            const idx = randomIndex(daftarAyat.length);
+            const ayat = daftarAyat[idx];
+            teksAyatEl.innerText = `\"${ayat.t}\"`;
+            refAyatEl.innerText = ayat.r;
+
+            // Update WA link
+            const pesan = encodeURIComponent(`Ayat Emas Tahun Baru:\n\n\"${ayat.t}\"\n(${ayat.r})\n\nAmbil ayatmu di: ${window.location.href}`);
+            btnWa.href = `https://wa.me/?text=${pesan}`;
+            btnWa.style.display = 'flex';
+            btnWa.setAttribute('aria-disabled','false');
+            btnSave.disabled = false;
+            showToast('Ayat telah dipilih — kamu bisa membagikan teks atau membuat gambar.');
+        }
+
+        // Helper: canvas.toBlob -> Promise
+        function canvasToBlob(canvas, type = 'image/png', quality = 0.92){
+            return new Promise((resolve) => {
+                canvas.toBlob((blob) => resolve(blob), type, quality);
+            });
+        }
+
+        async function bagikanGambar(){
+            try{
+                btnSave.disabled = true;
+                showToast('Mempersiapkan gambar...', 2000);
+                const canvas = await html2canvas(captureArea, { useCORS: true, backgroundColor: null, scale: 2 });
+                const blob = await canvasToBlob(canvas, 'image/png');
+                if (!blob) throw new Error('Gagal membuat blob dari canvas');
+
+                // Jika Web Share API mendukung file
+                const file = new File([blob], 'Ayat-Emas-2025.png', { type: 'image/png' });
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try{
+                        await navigator.share({ files: [file], title: 'Ayat Emas Tahun Baru', text: 'Dapatkan janji Tuhan untukmu hari ini!' });
+                        showToast('Berhasil dibagikan');
+                        btnSave.disabled = false;
+                        return;
+                    }catch(err){
+                        console.info('Share dibatalkan atau gagal, akan fallback ke unduh', err);
+                    }
+                }
+
+                // Fallback: unduh gambar ke user (object URL)
+                const tmpUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = tmpUrl;
+                a.download = 'Ayat-Emas-2025.png';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(tmpUrl);
+                showToast('Gambar telah diunduh. Silakan bagikan ke WhatsApp atau sosial media.');
+                btnSave.disabled = false;
+            }catch(err){
+                console.error('Gagal membuat/mengirim gambar:', err);
+                showToast('Terjadi kesalahan saat membuat gambar. Coba lagi.');
+                btnSave.disabled = false;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initState();
+            await preloadBackground();
+            btnRandom.addEventListener('click', acakAyat);
+            btnSave.addEventListener('click', bagikanGambar);
+            // allow enter/space on WA link for accessibility - nothing else required since it's an anchor
+            window.addEventListener('beforeunload', ()=>{ if (bgObjectUrl) URL.revokeObjectURL(bgObjectUrl); });
+        });
     </script>
 </body>
 </html>
+
+
