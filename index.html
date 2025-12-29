@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayat Emas Acak</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; margin: 0; color: #333;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px; border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            text-align: center; width: 90%; max-width: 450px;
+        }
+        .ayat-box { min-height: 120px; display: flex; flex-direction: column; justify-content: center; }
+        #teks-ayat { font-size: 1.3rem; font-style: italic; line-height: 1.6; margin-bottom: 15px; }
+        #ref-ayat { font-weight: bold; color: #555; margin-bottom: 25px; }
+        .btn-group { display: flex; flex-direction: column; gap: 10px; }
+        button {
+            padding: 12px; border: none; border-radius: 50px;
+            cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.3s;
+        }
+        .btn-main { background: #764ba2; color: white; }
+        .btn-main:hover { background: #5a3a7e; }
+        .btn-wa { background: #25d366; color: white; text-decoration: none; display: none; padding: 12px; border-radius: 50px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="ayat-box">
+        <div id="teks-ayat">Klik tombol di bawah untuk melihat pesan hari ini</div>
+        <div id="ref-ayat"></div>
+    </div>
+    
+    <div class="btn-group">
+        <button class="btn-main" onclick="acakAyat()">Dapatkan Ayat Emas</button>
+        <a id="btn-wa" class="btn-wa" href="#" target="_blank">Bagikan ke WhatsApp</a>
+    </div>
+</div>
+
+<script>
+    // MASUKKAN 100 AYAT ANDA DI SINI
+    const daftarAyat = [
+        { t: "Janganlah takut, sebab Aku menyertai engkau.", r: "Yesaya 41:10" },
+        { t: "Tuhan adalah terangku dan keselamatanku.", r: "Mazmur 27:1" },
+        { t: "Kasihilah sesamamu manusia seperti dirimu sendiri.", r: "Matius 22:39" },
+        { t: "Hati yang gembira adalah obat yang manjur.", r: "Amsal 17:22" },
+        // ... teruskan sampai 100 ayat
+        { t: "Ayat ke-100 Anda", r: "Referensi 100" }
+    ];
+
+    function acakAyat() {
+        const index = Math.floor(Math.random() * daftarAyat.length);
+        const ayat = daftarAyat[index];
+        
+        document.getElementById('teks-ayat').innerText = `"${ayat.t}"`;
+        document.getElementById('ref-ayat').innerText = ayat.r;
+        
+        // Link WhatsApp
+        const waLink = document.getElementById('btn-wa');
+        const pesan = encodeURIComponent(`Ayat Emas hari ini:\n\n"${ayat.t}"\n(${ayat.r})\n\nAmbil ayatmu di: [LINK_WEB_ANDA]`);
+        waLink.href = `https://wa.me/?text=${pesan}`;
+        waLink.style.display = "block";
+    }
+</script>
+
+</body>
+</html>
