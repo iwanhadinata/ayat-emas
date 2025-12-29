@@ -58,7 +58,7 @@
             width: min(90vw, 360px);
         }
 
-        button, .btn-wa {
+        button {
             padding: 14px;
             border: none;
             border-radius: 50px;
@@ -75,7 +75,6 @@
         }
 
         .btn-main { background: var(--gold); color: #000; }
-        .btn-wa { background: #25d366; color: white; display: none; }
         .btn-save { background: #ff9800; color: white; }
         button:disabled{ opacity: 0.6; cursor: not-allowed; transform: none; }
         button:hover:not(:disabled), a:hover{ transform: scale(1.03); opacity: 0.95; }
@@ -103,7 +102,6 @@
 
     <div class="btn-group">
         <button id="btn-random" class="btn-main" aria-label="Ambil Ayat Emas">🎲 Ambil Ayat Emas</button>
-        <!-- <a id="btn-wa" class="btn-wa" href="#" target="_blank" rel="noopener noreferrer" role="button" aria-disabled="true">💬 Bagikan Teks ke WA</a> -->
         <button id="btn-save" class="btn-save" aria-label="Bagikan atau Simpan Gambar">📸 Bagikan / Simpan Gambar</button>
     </div>
 
@@ -217,7 +215,6 @@
         // Elements
         const btnRandom = document.getElementById('btn-random');
         const btnSave = document.getElementById('btn-save');
-        const btnWa = document.getElementById('btn-wa');
         const teksAyatEl = document.getElementById('teks-ayat');
         const refAyatEl = document.getElementById('ref-ayat');
         const captureArea = document.getElementById('capture-area');
@@ -264,8 +261,7 @@
         // Initial state
         function initState(){
             btnSave.disabled = true;
-            btnWa.style.display = 'none';
-            btnWa.setAttribute('aria-disabled', 'true');
+            // Tombol WA dan fungsinya telah dihapus, jadi tidak ada referensi ke elemennya di sini
         }
 
         function acakAyat(){
@@ -274,13 +270,8 @@
             teksAyatEl.innerText = `\"${ayat.t}\"`;
             refAyatEl.innerText = ayat.r;
 
-            // Update WA link
-            const pesan = encodeURIComponent(`Ayat Emas Tahun Baru:\n\n\"${ayat.t}\"\n(${ayat.r})\n\nAmbil ayatmu di: ${window.location.href}`);
-            btnWa.href = `https://wa.me/?text=${pesan}`;
-            btnWa.style.display = 'flex';
-            btnWa.setAttribute('aria-disabled','false');
             btnSave.disabled = false;
-            showToast('Ayat telah dipilih — kamu bisa membagikan teks atau membuat gambar.');
+            showToast('Ayat telah dipilih — kamu bisa membuat gambar atau menyimpannya.');
         }
 
         // Helper: canvas.toBlob -> Promise
@@ -334,11 +325,8 @@
             await preloadBackground();
             btnRandom.addEventListener('click', acakAyat);
             btnSave.addEventListener('click', bagikanGambar);
-            // allow enter/space on WA link for accessibility - nothing else required since it's an anchor
             window.addEventListener('beforeunload', ()=>{ if (bgObjectUrl) URL.revokeObjectURL(bgObjectUrl); });
         });
     </script>
 </body>
 </html>
-
-
