@@ -83,23 +83,6 @@
         <button class="btn-save" onclick="unduhGambar()">💾 Simpan Sebagai Gambar</button>
     </div>
 
-
-    
-<!-- <div class="container">
-    <div class="ayat-box">
-        <div id="teks-ayat">Klik tombol di bawah untuk melihat pesan hari ini</div>
-        <div id="ref-ayat"></div>
-    </div>
-    
-    <div class="btn-group">
-        <button class="btn-main" onclick="acakAyat()">Dapatkan Ayat Emas</button>
-        <a id="btn-wa" class="btn-wa" href="#" target="_blank">Bagikan ke WhatsApp</a>
-   
-        <button class="btn-main" style="background:#ff9800" onclick="unduhGambar()">Simpan Sebagai Gambar</button>
-    </div>
-
-</div> -->
-
 <script>
     // MASUKKAN 100 AYAT ANDA DI SINI
     const daftarAyat = [
@@ -206,27 +189,36 @@
     ];
 
     function acakAyat() {
-        const index = Math.floor(Math.random() * daftarAyat.length);
-        const ayat = daftarAyat[index];
-        
-        document.getElementById('teks-ayat').innerText = `"${ayat.t}"`;
-        document.getElementById('ref-ayat').innerText = ayat.r;
-        
-        // Link WhatsApp
-        const waLink = document.getElementById('btn-wa');
-        const pesan = encodeURIComponent(`Ayat Emas :\n\n"${ayat.t}"\n(${ayat.r})\n\nAmbil ayatmu di: [LINK_WEB_ANDA]`);
-        waLink.href = `https://wa.me/?text=${pesan}`;
-        waLink.style.display = "block";
+            const index = Math.floor(Math.random() * daftarAyat.length);
+            const ayat = daftarAyat[index];
+            
+            document.getElementById('teks-ayat').innerText = `"${ayat.t}"`;
+            document.getElementById('ref-ayat').innerText = ayat.r;
+            
+            // Update Link WhatsApp
+            const waLink = document.getElementById('btn-wa');
+            // GANTI [LINK_WEB_ANDA] dengan link github pages Anda nantinya
+            const pesan = encodeURIComponent(`Ayat Emas Tahun Baru:\n\n"${ayat.t}"\n(${ayat.r})\n\nAmbil ayatmu di: https://iwanhadinata.github.io/ayat-emas/`);
+            waLink.href = `https://wa.me/?text=${pesan}`;
+            waLink.style.display = "block";
     }
 
     function unduhGambar() {
-    const kartu = document.querySelector('.container');
-    html2canvas(kartu).then(canvas => {
-        const link = document.createElement('a');
-        link.download = 'Ayat-Emas.png';
-        link.href = canvas.toDataURL();
-        link.click();
-    });
+        // PERBAIKAN: Mengambil id 'capture-area' (bukan .container)
+        const area = document.getElementById('capture-area');
+        
+        // Tambahkan useCORS agar gambar background bisa terbaca
+        html2canvas(area, { 
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: "#0f0c29" 
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'Ayat-Emas-Tahun-Baru.png';
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        });
+    }
 }
 </script>
 
