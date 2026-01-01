@@ -290,7 +290,7 @@
                 if (!blob) throw new Error('Gagal membuat blob dari canvas');
 
                 // Jika Web Share API mendukung file
-                const file = new File([blob], 'Ayat-Emas-2025.png', { type: 'image/png' });
+                const file = new File([blob], 'Ayat-Emas-2026.png', { type: 'image/png' });
                 if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                     try{
                         await navigator.share({ files: [file], title: 'Ayat Emas Tahun Baru', text: 'Dapatkan janji Tuhan untukmu hari ini!' });
@@ -306,7 +306,7 @@
                 const tmpUrl = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = tmpUrl;
-                a.download = 'Ayat-Emas-2025.png';
+                a.download = 'Ayat-Emas-2026.png';
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
